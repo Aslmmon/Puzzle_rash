@@ -9,11 +9,12 @@ class Level {
   // final dynamic puzzleData; // Data specific to the puzzle type
   // final int bestTime; // Player's best time for the level
   // final int bestMoves; // Player's best move count
-
+  final List<Map<String, double>>? connectDotsData; // New field for connect dots
   Level({
     required this.id,
     this.stars = 0,
     this.isLocked = true,
+    this.connectDotsData,
     // required this.puzzleType,
     // required this.puzzleData,
   });
@@ -23,11 +24,14 @@ class Level {
     String? id,
     int? stars,
     bool? isLocked,
+    List<Map<String, double>>? connectDotsData,
   }) {
     return Level(
       id: id ?? this.id,
       stars: stars ?? this.stars,
       isLocked: isLocked ?? this.isLocked,
+      connectDotsData: connectDotsData ?? this.connectDotsData,
+
     );
   }
 

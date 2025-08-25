@@ -15,12 +15,26 @@ class LevelRepository {
     // For now, return a hardcoded list.
     // This could also be where you define the default structure of your levels.
     return [
-      Level(id: 'pack1_lvl1', isLocked: false, stars: 0),
-      Level(id: 'pack1_lvl2', isLocked: true, stars: 0),
-      Level(id: 'pack1_lvl3', isLocked: true, stars: 0),
-      Level(id: 'pack1_lvl4', isLocked: true, stars: 0),
-      Level(id: 'pack1_lvl5', isLocked: true, stars: 0),
-      Level(id: 'pack2_lvl1', isLocked: true, stars: 0),
+      Level(
+        id: '1-1',
+        isLocked: false,
+        connectDotsData: [ // Simple square
+          {'x': 100.0, 'y': 100.0},
+          {'x': 200.0, 'y': 100.0},
+          {'x': 200.0, 'y': 200.0},
+          {'x': 100.0, 'y': 200.0},
+        ],
+      ),
+      Level(
+        id: '1-2',
+        isLocked: true, // Will be unlocked later
+        connectDotsData: [ // A simple triangle
+          {'x': 150.0, 'y': 100.0},
+          {'x': 100.0, 'y': 200.0},
+          {'x': 200.0, 'y': 200.0},
+        ],
+      ),
+      Level(id: '1-3'), //
       // ... more levels
     ];
   }
