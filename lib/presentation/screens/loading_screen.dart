@@ -24,13 +24,18 @@ class _LoadingScreenState extends State<LoadingScreen> {
     await Future.delayed(const Duration(seconds: 1)); // Simulate Ads init
     print("Ads initialized (simulated)");
 
-    await Future.delayed(const Duration(seconds: 1)); // Simulate other assets loading
+    await Future.delayed(
+      const Duration(seconds: 1),
+    ); // Simulate other assets loading
     print("Other assets loaded (simulated)");
 
     // After all tasks are complete, navigate to the main menu
-    if (mounted) { // Check if the widget is still in the tree
+    if (mounted) {
+      // Check if the widget is still in the tree
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const MainMenuScreen()), // We'll create MainMenuScreen in Day 3
+        MaterialPageRoute(
+          builder: (context) => const MainMenuScreen(),
+        ), // We'll create MainMenuScreen in Day 3
       );
     }
   }
