@@ -1,5 +1,6 @@
 // lib/game/dot_component.dart
 import 'package:flame/components.dart';
+import 'package:flame/effects.dart';
 import 'package:flutter/material.dart'; // For Paint and Color
 
 class DotComponent extends PositionComponent {
@@ -33,7 +34,20 @@ class DotComponent extends PositionComponent {
 
   // Method to call when this dot is connected
   void connect() {
-    isConnected = true;
+    if (!isConnected) {
+      isConnected = true;
+      // Add a pulse effect
+      add(
+        ScaleEffect.to(
+          Vector2.all(1.5), // Scale up to 150%
+          EffectController(
+            duration: 0.2, // Duration of scaling up
+            alternate: true, // Scale back down
+            repeatCount: 1, // Do it once (up and back down)
+          ),
+        ),
+      );
+    }
   }
 
   // Method to reset the dot's state

@@ -34,7 +34,18 @@ class LevelRepository {
           {'x': 200.0, 'y': 200.0},
         ],
       ),
-      Level(id: '1-3'), //
+      Level(
+        id: '1-3',
+        isLocked: true, // Will be unlocked later
+        connectDotsData: [ // A simple triangle
+          {'x': 100.0, 'y': 100.0},
+          {'x': 100.0, 'y': 200.0},
+          {'x': 100.0, 'y': 300.0},
+          {'x': 300.0, 'y': 100.0},
+          {'x': 200.0, 'y': 300.0},
+
+        ],
+      ),
       // ... more levels
     ];
   }
