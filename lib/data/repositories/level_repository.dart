@@ -16,34 +16,112 @@ class LevelRepository {
     // This could also be where you define the default structure of your levels.
     return [
       Level(
-        id: '1-1',
+        id: '1-1', // Simple Square (Good for basic connection)
         isLocked: false,
-        connectDotsData: [ // Simple square
-          {'x': 100.0, 'y': 100.0},
-          {'x': 200.0, 'y': 100.0},
-          {'x': 200.0, 'y': 200.0},
-          {'x': 100.0, 'y': 200.0},
+        connectDotsData: [
+          {'x': 100.0, 'y': 100.0}, {'x': 200.0, 'y': 100.0},
+          {'x': 200.0, 'y': 200.0}, {'x': 100.0, 'y': 200.0},
         ],
       ),
       Level(
-        id: '1-2',
-        isLocked: true, // Will be unlocked later
-        connectDotsData: [ // A simple triangle
-          {'x': 150.0, 'y': 100.0},
-          {'x': 100.0, 'y': 200.0},
+        id: '1-2', // Simple Triangle (Basic connection)
+        isLocked: true,
+        connectDotsData: [
+          {'x': 150.0, 'y': 100.0}, {'x': 100.0, 'y': 200.0},
           {'x': 200.0, 'y': 200.0},
         ],
       ),
+      // Your existing 1-3 was good, let's keep it or modify slightly
       Level(
-        id: '1-3',
-        isLocked: true, // Will be unlocked later
-        connectDotsData: [ // A simple triangle
-          {'x': 100.0, 'y': 100.0},
-          {'x': 100.0, 'y': 200.0},
-          {'x': 100.0, 'y': 300.0},
-          {'x': 300.0, 'y': 100.0},
-          {'x': 200.0, 'y': 300.0},
+        id: '1-3', // Tests non-obvious connection order, longer path
+        isLocked: true,
+        connectDotsData: [
+          {'x': 100.0, 'y': 100.0}, {'x': 100.0, 'y': 200.0},
+          {'x': 100.0, 'y': 300.0}, // Collinear start
+          {'x': 250.0, 'y': 100.0},
+          {'x': 250.0, 'y': 300.0},
+        ],
+      ),
+      Level(
+        id: '1-4', // Test for "Passing Through Other Dots" & Potential Self-Intersection
+        isLocked: true,
+        connectDotsData: [
+          //   A-----B
+          //   |  C  |   <- C is the intermediate dot
+          //   D-----E
+          {'x': 100.0, 'y': 100.0}, // A
+          {'x': 300.0, 'y': 100.0}, // B
+          {'x': 200.0, 'y': 150.0}, // C (The "other" dot)
+          {'x': 100.0, 'y': 200.0}, // D
+          {'x': 300.0, 'y': 200.0}, // E
+          // Try connecting A-E directly (should fail due to C if rules are strict)
+          // Or A-B-E-D-A (potential self-intersection)
+        ],
+      ),
 
+      Level(
+        id: '1-5-alt', // "Figure Eight" (alternative, avoids reusing a dot instance in data)
+        // This requires the player to draw lines that cross.
+        isLocked: true,
+        connectDotsData: [
+          {'x': 100.0, 'y': 100.0}, // Top-left
+          {'x': 300.0, 'y': 300.0}, // Bottom-right
+          {'x': 100.0, 'y': 300.0}, // Bottom-left
+          {'x': 300.0, 'y': 100.0}, // Top-right
+          // Path: (100,100) -> (300,300) -> (100,300) -> (300,100) -> (100,100)
+          // The segments (100,100)-(300,300) and (100,300)-(300,100) will intersect.
+        ],
+      ),
+      Level(
+        id: '1-6', // Minimal Dots (Line)
+        isLocked: true,
+        connectDotsData: [
+          {'x': 100.0, 'y': 150.0},
+          {'x': 250.0, 'y': 150.0},
+        ],
+      ),
+      Level(
+        id: '1-7', // Asymmetric "U" Shape - Longer path
+        isLocked: true,
+        connectDotsData: [
+          {'x': 100.0, 'y': 100.0}, {'x': 200.0, 'y': 100.0},
+          {'x': 200.0, 'y': 200.0}, {'x': 200.0, 'y': 300.0},
+          {'x': 100.0, 'y': 300.0},
+        ],
+      ),
+      Level(
+        id: '1-8', // Spiral In - Test for tight turns and potential self-intersection
+        isLocked: true,
+        connectDotsData: [
+          {'x': 100.0, 'y': 100.0}, {'x': 300.0, 'y': 100.0},
+          {'x': 300.0, 'y': 300.0}, {'x': 100.0, 'y': 300.0},
+          {'x': 100.0, 'y': 200.0}, {'x': 200.0, 'y': 200.0}, // Center of spiral
+        ],
+      ),
+      Level(
+        id: '1-9', // Test "Passing Through Other Dots" - Collinear case
+        isLocked: true,
+        connectDotsData: [
+          // A -- B -- C -- D
+          {'x': 50.0, 'y': 150.0},  // A
+          {'x': 150.0, 'y': 150.0}, // B (intermediate)
+          {'x': 250.0, 'y': 150.0}, // C (intermediate)
+          {'x': 350.0, 'y': 150.0}, // D
+          // Player might try A -> D directly. Should be invalid if passing through B or C is checked.
+          // Correct path would need to visit B and C, e.g. A-B-C-D or A-D (if only extreme dots needed to be connected).
+          // Assuming all dots must be connected: A-B-C-D is the only way.
+        ],
+      ),
+      Level(
+        id: '1-10', // More Complex Shape - "House"
+        isLocked: true,
+        connectDotsData: [
+          // Roof peak
+          {'x': 200.0, 'y': 50.0},
+          // Roof corners
+          {'x': 100.0, 'y': 150.0}, {'x': 300.0, 'y': 150.0},
+          // Base corners
+          {'x': 100.0, 'y': 250.0}, {'x': 300.0, 'y': 250.0},
         ],
       ),
       // ... more levels
