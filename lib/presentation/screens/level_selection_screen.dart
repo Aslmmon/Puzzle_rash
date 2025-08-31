@@ -30,12 +30,13 @@ class LevelSelectionScreen extends ConsumerWidget {
             return LevelButton(
               level: level,
               onPressed: () {
-                // Navigate to GameplayScreen
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => GameplayScreen(level: level),
-                  ),
-                );
+                level.isLocked
+                    ? null
+                    : Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => GameplayScreen(level: level),
+                      ),
+                    );
               },
             );
           },

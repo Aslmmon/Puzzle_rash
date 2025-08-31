@@ -1,36 +1,62 @@
 import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:puzzle_rush/data/cache/progress_storage.dart';
 import 'package:puzzle_rush/presentation/providers/theme_provider.dart';
 import '../../domain/entities/memory_card.dart';
 import '../../domain/entities/level_config.dart';
 import '../../domain/usecases/generate_deck.dart';
+import '../providers/storageProvider.dart';
+import 'levels_provider.dart';
 
 final gameControllerProvider = StateNotifierProvider<GameController, GameState>(
-  (ref) {
-    final repo = ref.watch(themeRepositoryProvider);
-    return GameController(generateDeck: GenerateDeck(repository: repo));
-  },
+  (ref) => GameController(
+    ref: ref,
+    storage: ref.watch(progressStorageProvider),
+    generateDeck: GenerateDeck(repository: ref.watch(themeRepositoryProvider)),
+  ),
 );
 
 class GameState {
   final List<MemoryCard> deck;
   final int moves;
   final bool won;
+  final LevelConfig? currentLevel;
 
-  GameState({required this.deck, this.moves = 0, this.won = false});
+  GameState({
+    required this.deck,
+    this.moves = 0,
+    this.won = false,
+    this.currentLevel,
+  });
 
-  GameState copyWith({List<MemoryCard>? deck, int? moves, bool? won}) {
+  GameState copyWith({
+    List<MemoryCard>? deck,
+    int? moves,
+    bool? won,
+    LevelConfig? currentLevel,
+  }) {
     return GameState(
       deck: deck ?? this.deck,
       moves: moves ?? this.moves,
       won: won ?? this.won,
+      currentLevel: currentLevel ?? this.currentLevel,
     );
   }
 }
 
 class GameController extends StateNotifier<GameState> {
+  final Ref ref;
+  final ProgressStorage storage;
   final GenerateDeck generateDeck;
+
+  GameController({
+    required this.ref,
+    required this.storage,
+    required this.generateDeck,
+  }) : super(GameState(deck: [])) {
+    _firstCard = null;
+    _secondCard = null;
+  }
 
   final matchedCardStream = StreamController<int>.broadcast();
   final winStream = StreamController<void>.broadcast();
@@ -38,62 +64,78 @@ class GameController extends StateNotifier<GameState> {
   MemoryCard? _firstCard;
   MemoryCard? _secondCard;
 
-  GameController({required this.generateDeck}) : super(GameState(deck: []));
-
+  /// Start a level
   void startLevel(LevelConfig level) {
-    final deck = generateDeck(level);
-    state = GameState(deck: deck, moves: 0, won: false);
+    state = state.copyWith(
+      deck: generateDeck(level),
+      moves: 0,
+      won: false,
+      currentLevel: level,
+    );
     _firstCard = null;
     _secondCard = null;
   }
 
+  /// Select a card
   void selectCard(int index) {
     final card = state.deck[index];
-    if (card.revealed || card.matched) return; // Ignore already revealed
+    if (card.revealed || card.matched) return;
 
-    List<MemoryCard> newDeck = List.from(state.deck);
+    final newDeck = List<MemoryCard>.from(state.deck);
     newDeck[index] = card.reveal();
 
     if (_firstCard == null) {
       _firstCard = newDeck[index];
       state = state.copyWith(deck: newDeck);
-    } else if (_secondCard == null) {
+      return;
+    }
+
+    if (_secondCard == null) {
       _secondCard = newDeck[index];
       state = state.copyWith(deck: newDeck, moves: state.moves + 1);
 
-      // Check for match
       if (_firstCard!.pairId == _secondCard!.pairId) {
-        newDeck =
+        // Match found
+        final matchedDeck =
             newDeck.map((c) {
               if (c.pairId == _firstCard!.pairId) return c.match();
               return c;
             }).toList();
-        state = state.copyWith(deck: newDeck);
-        matchedCardStream.add(_firstCard!.pairId); // 🔔 Notify UI
+
+        state = state.copyWith(deck: matchedDeck);
+        matchedCardStream.add(_firstCard!.pairId);
 
         _firstCard = null;
         _secondCard = null;
 
-        // Check if won
-        if (newDeck.every((c) => c.matched)) {
-          state = state.copyWith(won: true);
-          winStream.add(null); // 🔔 Notify UI
+        if (matchedDeck.every((c) => c.matched)) {
+          _handleWin();
         }
       } else {
-        // Flip back after delay
+        // Not matched: hide after 1s
         Future.delayed(const Duration(seconds: 1), () {
-          List<MemoryCard> tempDeck = List.from(state.deck);
-          tempDeck =
-              tempDeck.map((c) {
-                if (!c.matched) return c.hide();
-                return c;
-              }).toList();
+          final tempDeck =
+              newDeck.map((c) => c.matched ? c : c.hide()).toList();
           state = state.copyWith(deck: tempDeck);
           _firstCard = null;
           _secondCard = null;
         });
       }
     }
+  }
+
+  /// Handle level win
+  Future<void> _handleWin() async {
+    final currentLevel = state.currentLevel;
+    if (currentLevel == null) return;
+
+    await storage.markLevelCompleted(currentLevel.id);
+
+    // Unlock next level
+    await ref.read(levelsProvider.notifier).markLevelCompleted(currentLevel.id);
+
+    state = state.copyWith(won: true);
+    winStream.add(null);
   }
 
   @override

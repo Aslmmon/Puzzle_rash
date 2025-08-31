@@ -39,6 +39,7 @@ dependencies:
   flutter_riverpod: ^2.4.0 # Check for the latest version on pub.dev
   firebase_core: ^2.17.0 # Check for the latest version on pub.dev
   go_router: ^16.2.0
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:

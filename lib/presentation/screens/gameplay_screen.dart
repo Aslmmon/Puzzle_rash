@@ -4,6 +4,7 @@ import '../providers/game_controller.dart';
 import '../providers/soundServiceProvider.dart';
 import '../widgets/memory_card_tile.dart';
 import '../../domain/entities/level_config.dart';
+import 'level_selection_screen.dart';
 
 class GameplayScreen extends ConsumerStatefulWidget {
   final LevelConfig level;
@@ -95,19 +96,39 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen>
               ),
           // Win animation overlay
           if (gameState.won)
-            Center(
-              child: ScaleTransition(
-                scale: _winScale,
-                child: Container(
-                  padding: const EdgeInsets.all(24),
-                  color: Colors.green,
-                  child: Text(
-                    '🎉 You Won! 🎉 Moves: ${gameState.moves}',
-                    style: const TextStyle(fontSize: 36, color: Colors.white),
+            if (gameState.won)
+              Center(
+                child: ScaleTransition(
+                  scale: _winScale,
+                  child: Container(
+                    padding: const EdgeInsets.all(24),
+                    color: Colors.green,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '🎉 You Won! 🎉 Moves: ${gameState.moves}',
+                          style: const TextStyle(
+                            fontSize: 36,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (_) => const LevelSelectionScreen(),
+                              ),
+                            );
+                          },
+                          child: const Text('Choose Level'),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
         ],
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../data/cache/progress_storage.dart';
 import 'main_menu_screen.dart'; // We'll create this in Day 3
 
 class LoadingScreen extends StatefulWidget {
@@ -39,6 +40,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
       );
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
