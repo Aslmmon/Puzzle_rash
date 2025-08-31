@@ -1,15 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puzzle_rush/presentation/providers/theme_provider.dart';
 import '../../domain/entities/memory_card.dart';
 import '../../domain/entities/level_config.dart';
 import '../../domain/usecases/generate_deck.dart';
 
-final gameControllerProvider =
-
-StateNotifierProvider<GameController, GameState>((ref) {
-  final repo = ref.watch(themeRepositoryProvider);
-  return GameController(generateDeck: GenerateDeck(repository: repo));
-});
+final gameControllerProvider = StateNotifierProvider<GameController, GameState>(
+  (ref) {
+    final repo = ref.watch(themeRepositoryProvider);
+    return GameController(generateDeck: GenerateDeck(repository: repo));
+  },
+);
 
 class GameState {
   final List<MemoryCard> deck;
@@ -29,11 +31,14 @@ class GameState {
 
 class GameController extends StateNotifier<GameState> {
   final GenerateDeck generateDeck;
+
+  final matchedCardStream = StreamController<int>.broadcast();
+  final winStream = StreamController<void>.broadcast();
+
   MemoryCard? _firstCard;
   MemoryCard? _secondCard;
 
-  GameController({required this.generateDeck})
-      : super(GameState(deck: []));
+  GameController({required this.generateDeck}) : super(GameState(deck: []));
 
   void startLevel(LevelConfig level) {
     final deck = generateDeck(level);
@@ -58,31 +63,43 @@ class GameController extends StateNotifier<GameState> {
 
       // Check for match
       if (_firstCard!.pairId == _secondCard!.pairId) {
-        newDeck = newDeck.map((c) {
-          if (c.pairId == _firstCard!.pairId) return c.match();
-          return c;
-        }).toList();
+        newDeck =
+            newDeck.map((c) {
+              if (c.pairId == _firstCard!.pairId) return c.match();
+              return c;
+            }).toList();
         state = state.copyWith(deck: newDeck);
+        matchedCardStream.add(_firstCard!.pairId); // 🔔 Notify UI
+
         _firstCard = null;
         _secondCard = null;
 
         // Check if won
         if (newDeck.every((c) => c.matched)) {
           state = state.copyWith(won: true);
+          winStream.add(null); // 🔔 Notify UI
         }
       } else {
         // Flip back after delay
         Future.delayed(const Duration(seconds: 1), () {
           List<MemoryCard> tempDeck = List.from(state.deck);
-          tempDeck = tempDeck.map((c) {
-            if (!c.matched) return c.hide();
-            return c;
-          }).toList();
+          tempDeck =
+              tempDeck.map((c) {
+                if (!c.matched) return c.hide();
+                return c;
+              }).toList();
           state = state.copyWith(deck: tempDeck);
           _firstCard = null;
           _secondCard = null;
         });
       }
     }
+  }
+
+  @override
+  void dispose() {
+    matchedCardStream.close();
+    winStream.close();
+    super.dispose();
   }
 }
