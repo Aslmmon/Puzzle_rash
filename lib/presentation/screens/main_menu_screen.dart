@@ -26,7 +26,9 @@ class MainMenuScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const LevelSelectionScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const LevelSelectionScreen(),
+                    ),
                   );
                   print('Play button pressed');
                 },
