@@ -129,13 +129,32 @@ class GameController extends StateNotifier<GameState> {
     final currentLevel = state.currentLevel;
     if (currentLevel == null) return;
 
+    // Calculate stars based on moves
+    final stars = calculateStars(state.moves, currentLevel.movesLimit);
+
+    // Reward coins (e.g., 10 per star)
+    final coinsEarned = stars * 10;
+
+    // Save progress
     await storage.markLevelCompleted(currentLevel.id);
+    await storage.saveStars(currentLevel.id, stars);
+    await storage.addCoins(coinsEarned);
 
     // Unlock next level
     await ref.read(levelsProvider.notifier).markLevelCompleted(currentLevel.id);
 
     state = state.copyWith(won: true);
     winStream.add(null);
+  }
+
+  int calculateStars(int moves, int movesLimit) {
+    if (moves <= movesLimit ~/ 2) {
+      return 3; // excellent
+    } else if (moves <= movesLimit) {
+      return 2; // good
+    } else {
+      return 1; // minimum
+    }
   }
 
   @override

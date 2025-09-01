@@ -5,12 +5,14 @@ class LevelConfig {
   final String themeKey;
   final bool isLocked; // 🔑 Add this
 
+
   const LevelConfig({
     required this.id,
     required this.rows,
     required this.cols,
     required this.themeKey,
     this.isLocked = true, // default locked
+
   });
 
   LevelConfig copyWith({bool? isLocked}) {
@@ -20,6 +22,7 @@ class LevelConfig {
       cols: cols,
       themeKey: themeKey,
       isLocked: isLocked ?? this.isLocked,
+
     );
   }
 
@@ -28,4 +31,7 @@ class LevelConfig {
 
   /// Total number of pairs
   int get pairs => totalCards ~/ 2;
+
+  int get movesLimit => pairs * 2;
+
 }
