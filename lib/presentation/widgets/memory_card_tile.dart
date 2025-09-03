@@ -108,7 +108,7 @@ class _MemoryCardTileState extends State<MemoryCardTile>
       child: Container(
         decoration: BoxDecoration(
           color: widget.card.matched ? Colors.green : Colors.blue,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Center(
           child: Icon(Icons.help_outline, color: Colors.white, size: 40),

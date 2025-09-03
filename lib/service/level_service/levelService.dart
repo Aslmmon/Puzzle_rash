@@ -11,27 +11,31 @@ class LevelService {
     const themes = ['palestine', 'islam', 'animals', 'fruits', 'sports'];
 
     // You can define a pattern to increase difficulty
-    for (int i = 1; i <= 20; i++) {
+    for (int i = 1; i <= 30; i++) {
       // Let's create 20 levels for now
       int rows = 2;
       int cols = 2;
       final themeKey = themes[(i - 1) % themes.length];
 
-      // Increase grid size based on a faster progression
-      if (i > 4) {
-        // Start increasing grid size after level 4
+      // New difficulty progression for 30 levels
+      if (i <= 5) {
+        rows = 2;
+        cols = 2;
+      } else if (i <= 10) {
         rows = 2;
         cols = 3;
-      }
-      if (i > 8) {
-        // Increase again after level 8
+      } else if (i <= 15) {
         rows = 3;
         cols = 3;
-      }
-      if (i > 12) {
-        // And again after level 12
+      } else if (i <= 20) {
         rows = 3;
         cols = 4;
+      } else if (i <= 25) {
+        rows = 4;
+        cols = 4; // A new, more challenging tier
+      } else {
+        rows = 4;
+        cols = 5; // The final, most difficult tier
       }
 
       levels.add(

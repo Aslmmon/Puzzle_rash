@@ -22,15 +22,26 @@ class GameplayScreen extends ConsumerWidget {
     void resetGame() => gameController.reset();
 
     return Scaffold(
-      appBar: GameplayAppBar(
-        levelId: level.id.toString(),
-        moves: gameState.moves,
-        totalCoins: gameState.totalCoins,
-      ),
       body: Stack(
-        alignment: Alignment.center,
         children: [
-          CardsGrid(level: level),
+          // This ensures the grid and other widgets are below the UI bar
+          Column(
+            children: [
+              const SizedBox(height: 60), // Add space for the UI bar
+              Expanded(child: CardsGrid(level: level)),
+            ],
+          ),
+          // Your new custom UI bar at the top
+          CustomGameplayUI(
+            levelId: level.id.toString(),
+            moves: gameState.moves,
+            totalCoins: gameState.totalCoins,
+            onRewardedAdTap: () {
+              // TODO: Implement rewarded ad logic here
+              print('Rewarded Ad button tapped!');
+            },
+          ),
+
           if (gameState.isWin)
             WinOverlay(
               moves: gameState.moves,
@@ -50,21 +61,11 @@ class GameplayScreen extends ConsumerWidget {
                 context.go(
                   RoutePaths.gameplay.replaceAll(
                     ':levelId',
-                    nextLevel.id.toString(),
+                    nextLevel.id.toString()
                   ),
                 );
               },
               onChooseLevel: () {
-                print(
-                  "levels are " +
-                      ref.read(levelsProvider.notifier).state.length.toString(),
-                );
-
-                print(
-                  "levels are " +
-                      ref.read(levelsProvider.notifier).state.length.toString(),
-                );
-
                 resetGame();
                 context.go(RoutePaths.levelSelection);
               },

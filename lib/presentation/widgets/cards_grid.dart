@@ -21,16 +21,22 @@ class CardsGrid extends ConsumerWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
+    // Determine the number of cards and screen dimensions
+    final totalCards = gameState.deck.length;
+    final rows = level.rows;
+    final cols = level.cols;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
+          crossAxisCount: cols, // Set columns based on the level config
           mainAxisSpacing: 16,
-          crossAxisSpacing: 20,
-          childAspectRatio: 2,
+          crossAxisSpacing: 24,
+          // Calculate aspect ratio to fit all cards
+          childAspectRatio: (MediaQuery.of(context).size.width / cols) / (MediaQuery.of(context).size.height / rows * 0.7),
         ),
-        itemCount: gameState.deck.length,
+        itemCount: totalCards,
         itemBuilder: (context, index) {
           final card = gameState.deck[index];
           return MemoryCardTile(
