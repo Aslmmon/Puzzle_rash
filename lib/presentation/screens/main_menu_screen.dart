@@ -42,7 +42,7 @@ class MainMenuScreen extends StatelessWidget {
               children: [
                 menuButton(
                   'Play',
-                  () => context.go(RoutePaths.levelSelection),
+                  () => context.push(RoutePaths.levelSelection),
                   verticalPadding,
                 ),
                 menuButton('Daily Puzzle', () {}, verticalPadding),
