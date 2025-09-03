@@ -19,7 +19,7 @@ class LevelSelectionScreen extends ConsumerWidget {
       body: LayoutBuilder(
         builder: (context, constraints) {
           // Responsive grid: more columns if landscape
-          int crossAxisCount = constraints.maxWidth > 600 ? 6 : 4;
+          int crossAxisCount = constraints.maxWidth > 600 ? 8 : 4;
           double childAspectRatio = 1.0; // square buttons
 
           return Padding(

@@ -1,30 +1,31 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puzzle_rush/data/cache/progress_storage.dart';
 import 'package:puzzle_rush/presentation/providers/storageProvider.dart';
+import 'package:puzzle_rush/service/level_service/levelService.dart';
 import '../../domain/entities/level_config.dart';
 
 final levelsProvider = StateNotifierProvider<LevelsNotifier, List<LevelConfig>>(
-  (ref) => LevelsNotifier(ref.read(progressStorageProvider)),
+  (ref) {
+    return LevelsNotifier(
+      ref.read(progressStorageProvider),
+      ref.read(levelServiceProvider), // Inject the new service
+    );
+  },
 );
 
 class LevelsNotifier extends StateNotifier<List<LevelConfig>> {
   final ProgressStorage storage;
+  final LevelService levelService;
 
-  LevelsNotifier(this.storage) : super([]) {
+  LevelsNotifier(this.storage, this.levelService) : super([]) {
     _initLevels();
   }
 
   Future<void> _initLevels() async {
-    final initialLevels = [
-      LevelConfig(id: 1, rows: 2, cols: 2, themeKey: 'palestine'),
-      LevelConfig(id: 2, rows: 2, cols: 3, themeKey: 'palestine'),
-      LevelConfig(id: 3, rows: 3, cols: 3, themeKey: 'islam'),
-    ];
-
+    final allLevels = levelService.generateLevels(); // Use the service to get all levels
     final completed = await storage.getCompletedLevels();
 
-    state =
-        initialLevels.map((level) {
+    state = allLevels.map((level) {
           if (level.id == 1 || completed.contains(level.id - 1)) {
             return level.copyWith(isLocked: false);
           }
@@ -34,9 +35,7 @@ class LevelsNotifier extends StateNotifier<List<LevelConfig>> {
 
   Future<void> markLevelCompleted(int id) async {
     await storage.markLevelCompleted(id);
-
-    state =
-        state.map((level) {
+    state = state.map((level) {
           if (level.id == id + 1) return level.copyWith(isLocked: false);
           return level;
         }).toList();
@@ -44,8 +43,11 @@ class LevelsNotifier extends StateNotifier<List<LevelConfig>> {
 
   LevelConfig getLevelById(int id) {
     return state.firstWhere(
-          (l) => l.id == id,
-      orElse: () => state.first,
+      (l) => l.id == id,
+      orElse: () {
+        // Handle cases where the level ID is out of range
+        return state.first;
+      },
     );
   }
 }

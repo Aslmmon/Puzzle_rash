@@ -54,7 +54,7 @@ class _WinOverlayState extends State<WinOverlay>
         child: Card(
           margin: const EdgeInsets.symmetric(horizontal: 20),
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(12.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

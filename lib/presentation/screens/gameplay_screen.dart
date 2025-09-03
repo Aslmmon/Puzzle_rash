@@ -19,7 +19,7 @@ class GameplayScreen extends ConsumerWidget {
     // Watch the game state from the family provider.
     final gameState = ref.watch(gameControllerProvider(level));
     final gameController = ref.read(gameControllerProvider(level).notifier);
-
+    void resetGame() => gameController.reset();
 
     return Scaffold(
       appBar: GameplayAppBar(
@@ -45,7 +45,7 @@ class GameplayScreen extends ConsumerWidget {
                   ) *
                   10,
               onNextLevel: () {
-                gameController.reset();
+                resetGame();
                 final nextLevel = ref.read(levelsProvider)[level.id];
                 context.go(
                   RoutePaths.gameplay.replaceAll(
@@ -53,9 +53,19 @@ class GameplayScreen extends ConsumerWidget {
                     nextLevel.id.toString(),
                   ),
                 );
-                            },
+              },
               onChooseLevel: () {
-                gameController.reset();
+                print(
+                  "levels are " +
+                      ref.read(levelsProvider.notifier).state.length.toString(),
+                );
+
+                print(
+                  "levels are " +
+                      ref.read(levelsProvider.notifier).state.length.toString(),
+                );
+
+                resetGame();
                 context.go(RoutePaths.levelSelection);
               },
             ),

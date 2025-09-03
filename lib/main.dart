@@ -14,6 +14,7 @@ import 'package:puzzle_rush/service/router/app_router.dart';
 /// Initializes the Flutter application and runs the [MyApp] widget.
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,

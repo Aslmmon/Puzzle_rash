@@ -25,7 +25,7 @@ class CardsGrid extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 6,
+          crossAxisCount: 4,
           mainAxisSpacing: 16,
           crossAxisSpacing: 20,
           childAspectRatio: 2,
