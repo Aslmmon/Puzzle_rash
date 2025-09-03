@@ -22,23 +22,39 @@ class LevelsNotifier extends StateNotifier<List<LevelConfig>> {
   }
 
   Future<void> _initLevels() async {
-    final allLevels = levelService.generateLevels(); // Use the service to get all levels
+    final allLevels =
+        levelService.generateLevels(); // Use the service to get all levels
     final completed = await storage.getCompletedLevels();
+    final levelsWithStars = <LevelConfig>[];
+    for (var level in allLevels) {
+      final stars = await storage.getStars(
+        level.id,
+      ); // <-- Fetch the star count
+      final isLocked = level.id != 1 && !completed.contains(level.id - 1);
 
-    state = allLevels.map((level) {
-          if (level.id == 1 || completed.contains(level.id - 1)) {
-            return level.copyWith(isLocked: false);
-          }
-          return level;
-        }).toList();
+      levelsWithStars.add(
+        level.copyWith(
+          isLocked: isLocked,
+          stars: stars, // <-- Add the stars to the level
+        ),
+      );
+    }
+    state = levelsWithStars;
   }
 
   Future<void> markLevelCompleted(int id) async {
     await storage.markLevelCompleted(id);
-    state = state.map((level) {
-          if (level.id == id + 1) return level.copyWith(isLocked: false);
+    // We need to rebuild the state list to trigger a UI update
+    final updatedList =
+        state.map((level) {
+          if (level.id == id + 1) {
+            return level.copyWith(isLocked: false);
+          }
           return level;
         }).toList();
+
+    // Set the new state
+    state = updatedList;
   }
 
   LevelConfig getLevelById(int id) {

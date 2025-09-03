@@ -4,7 +4,7 @@ class LevelConfig {
   final int cols;
   final String themeKey;
   final bool isLocked; // 🔑 Add this
-
+  final int stars; // <-- Add this field
 
   const LevelConfig({
     required this.id,
@@ -12,17 +12,20 @@ class LevelConfig {
     required this.cols,
     required this.themeKey,
     this.isLocked = true, // default locked
-
+    this.stars = 0, // <-- Set a default value
   });
 
-  LevelConfig copyWith({bool? isLocked}) {
+  LevelConfig copyWith({
+    bool? isLocked,
+    int? stars, // <-- Add this to copyWith
+  }) {
     return LevelConfig(
       id: id,
       rows: rows,
       cols: cols,
       themeKey: themeKey,
       isLocked: isLocked ?? this.isLocked,
-
+      stars: stars ?? this.stars, // <-- Update stars
     );
   }
 
@@ -33,5 +36,4 @@ class LevelConfig {
   int get pairs => totalCards ~/ 2;
 
   int get movesLimit => pairs * 2;
-
 }
