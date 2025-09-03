@@ -37,39 +37,37 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final controller = ref.read(gameControllerProvider.notifier);
       controller.startLevel(widget.level);
-
       // Load total coins
       _totalCoins = await controller.storage.getCoins();
-
       // Listen to win events
       controller.winStream.stream.listen((_) async {
         ref.read(soundServiceProvider).playWin();
-
         final stars = controller.calculateStars(
           ref.read(gameControllerProvider).moves,
           ref.read(gameControllerProvider).currentLevel!.movesLimit,
         );
         _coinsEarnedThisLevel = stars;
-
         // Update coins in storage
         await controller.storage.addCoins(_coinsEarnedThisLevel);
         _totalCoins = await controller.storage.getCoins();
-
         // Show dialog
         showWinDialog(
           context: context,
           starsEarned: stars,
           moves: ref.read(gameControllerProvider).moves,
           coinsEarned: _coinsEarnedThisLevel,
-          onNextLevel: ref.read(levelsProvider).length >
-              ref.read(gameControllerProvider).currentLevel!.id
-              ? () {
-            final nextLevel = ref
-                .read(levelsProvider)[
-            ref.read(gameControllerProvider).currentLevel!.id];
-            controller.startLevel(nextLevel);
-          }
-              : null,
+          onNextLevel:
+              ref.read(levelsProvider).length >
+                      ref.read(gameControllerProvider).currentLevel!.id
+                  ? () {
+                    final nextLevel =
+                        ref.read(levelsProvider)[ref
+                            .read(gameControllerProvider)
+                            .currentLevel!
+                            .id];
+                    controller.startLevel(nextLevel);
+                  }
+                  : null,
           onChooseLevel: () {
             context.go(RoutePaths.levelSelection);
           },
