@@ -43,8 +43,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               .read(levelsProvider)
               .firstWhere(
                 (l) => l.id == levelId,
-            orElse: () => ref.read(levelsProvider).first,
-          );
+                orElse: () => ref.read(levelsProvider).first,
+              );
           return GameplayScreen(level: level);
         },
       ),

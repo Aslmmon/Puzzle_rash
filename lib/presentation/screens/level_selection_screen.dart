@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:puzzle_rush/presentation/widgets/level_config.dart'
     show LevelButton;
+import 'package:puzzle_rush/service/router/app_router.dart';
 import '../../domain/entities/level_config.dart';
 import '../providers/levels_provider.dart';
 
@@ -39,8 +40,9 @@ class LevelSelectionScreen extends ConsumerWidget {
                       level.isLocked
                           ? (){}
                           : () {
+
                             // Navigate via GoRouter with level ID
-                            context.go('/gameplay/${level.id}');
+                            context.push(RoutePaths.gameplay);
                           },
                 );
               },
