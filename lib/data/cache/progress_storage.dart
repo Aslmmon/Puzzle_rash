@@ -1,76 +1,50 @@
+// lib/data/cache/progress_storage.dart
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProgressStorage {
-  static const _completedLevelsKey = 'completed_levels';
-  static const _coinsKey = 'coins';
-  static const _starsKey = 'stars'; // stores stars per level as map string
+  static const String _coinsKey = 'coins';
+  static const String _completedLevelsKey = 'completed_levels';
 
-  /// ===========================
-  /// LEVEL PROGRESS
-  /// ===========================
-  Future<List<int>> getCompletedLevels() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getStringList(_completedLevelsKey)
-        ?.map(int.parse)
-        .toList() ??
-        [];
+  final SharedPreferences _prefs;
+
+  ProgressStorage(this._prefs);
+
+  /// Retrieves the total number of coins.
+  int getCoins() {
+    return _prefs.getInt(_coinsKey) ?? 0;
   }
 
+  /// Adds coins to the total.
+  Future<void> addCoins(int coins) async {
+    final currentCoins = getCoins();
+    await _prefs.setInt(_coinsKey, currentCoins + coins);
+  }
+
+  /// Retrieves a list of completed level IDs.
+  List<int> getCompletedLevels() {
+    final completed = _prefs.getStringList(_completedLevelsKey) ?? [];
+    return completed.map(int.parse).toList();
+  }
+
+  /// Marks a level as completed.
   Future<void> markLevelCompleted(int levelId) async {
-    final prefs = await SharedPreferences.getInstance();
-    final completed = await getCompletedLevels();
-    if (!completed.contains(levelId)) completed.add(levelId);
-    await prefs.setStringList(
-        _completedLevelsKey, completed.map((e) => e.toString()).toList());
-  }
-
-  /// ===========================
-  /// COINS
-  /// ===========================
-  Future<int> getCoins() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(_coinsKey) ?? 0;
-  }
-
-  Future<void> addCoins(int amount) async {
-    final prefs = await SharedPreferences.getInstance();
-    final current = await getCoins();
-    await prefs.setInt(_coinsKey, current + amount);
-  }
-
-  Future<void> setCoins(int amount) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_coinsKey, amount);
-  }
-
-  /// ===========================
-  /// STARS (per level)
-  /// ===========================
-  Future<Map<int, int>> getStars() async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getStringList(_starsKey);
-    if (raw == null) return {};
-    final Map<int, int> starsMap = {};
-    for (final entry in raw) {
-      final parts = entry.split(':'); // "levelId:stars"
-      if (parts.length == 2) {
-        final id = int.tryParse(parts[0]);
-        final stars = int.tryParse(parts[1]);
-        if (id != null && stars != null) starsMap[id] = stars;
-      }
+    final completed = getCompletedLevels();
+    if (!completed.contains(levelId)) {
+      completed.add(levelId);
+      await _prefs.setStringList(
+        _completedLevelsKey,
+        completed.map((e) => e.toString()).toList(),
+      );
     }
-    return starsMap;
   }
 
+  /// Saves the stars earned for a specific level.
   Future<void> saveStars(int levelId, int stars) async {
-    final prefs = await SharedPreferences.getInstance();
-    final starsMap = await getStars();
+    await _prefs.setInt('stars_$levelId', stars);
+  }
 
-    // keep max stars (don’t downgrade if user replays worse)
-    final current = starsMap[levelId] ?? 0;
-    if (stars > current) starsMap[levelId] = stars;
-
-    final raw = starsMap.entries.map((e) => "${e.key}:${e.value}").toList();
-    await prefs.setStringList(_starsKey, raw);
+  /// Retrieves the stars earned for a specific level.
+  int getStars(int levelId) {
+    return _prefs.getInt('stars_$levelId') ?? 0;
   }
 }

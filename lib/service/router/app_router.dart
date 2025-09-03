@@ -1,4 +1,4 @@
-// lib/routes/app_router.dart
+// lib/service/router/app_router.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:puzzle_rush/presentation/providers/levels_provider.dart';
@@ -11,8 +11,8 @@ import 'package:puzzle_rush/presentation/screens/splash_screen.dart';
 
 // AppRouter provider
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final initState = ref.watch(appInitializationProvider);
   final splashState = ref.watch(splashTargetProvider);
+  final initState = ref.watch(appInitializationProvider);
 
   return GoRouter(
     initialLocation: RoutePaths.splash,
@@ -36,45 +36,33 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.gameplay,
         builder: (context, state) {
-          final levelId = state.pathParameters['levelId']!;
-          // Here you could fetch the LevelConfig via provider if needed
-          print("$levelId level is $levelId ");
-          final level = ref
-              .read(levelsProvider)
-              .firstWhere(
-                (l) => l.id == levelId,
-                orElse: () => ref.read(levelsProvider).first,
-              );
+          final levelId = int.parse(state.pathParameters['levelId']!);
+          final level = ref.read(levelsProvider.notifier).getLevelById(levelId);
           return GameplayScreen(level: level);
         },
       ),
     ],
     redirect: (context, state) {
-      //Splash State
-      if (state.matchedLocation == RoutePaths.splash) {
-        return splashState.when(
-          data: (target) {
-            switch (target) {
-              case SplashTarget.loading:
-                return RoutePaths.loading; // redirect to loading
-            }
-          },
-          loading: () => null, // still waiting, stay on splash
-          error:
-              (e, _) => RoutePaths.loading, // optional: go to loading on error
-        );
+      final isSplash = state.matchedLocation == RoutePaths.splash;
+      final isLoading = state.matchedLocation == RoutePaths.loading;
+
+      // Handle the splash screen state
+      if (isSplash) {
+        if (splashState.isLoading) return null;
+        if (splashState.hasError) return RoutePaths.loading;
+        return RoutePaths.loading;
       }
 
-      if (state.matchedLocation == RoutePaths.loading) {
-        if (initState.isLoading) return RoutePaths.loading;
+      // Handle the loading screen state
+      if (isLoading) {
+        if (initState.isLoading) return null; // Stay on loading screen
         if (initState.hasError) {
-          return RoutePaths.loading; // Could make /error later
+          return RoutePaths.mainMenu; // Or an error screen
         }
-        if (initState.hasValue) return RoutePaths.mainMenu;
+        return RoutePaths.mainMenu;
       }
-      // Redirect to /loading until initialization completes
 
-      return null; // default
+      return null;
     },
   );
 });

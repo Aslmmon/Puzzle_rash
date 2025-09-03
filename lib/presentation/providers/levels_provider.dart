@@ -41,4 +41,11 @@ class LevelsNotifier extends StateNotifier<List<LevelConfig>> {
           return level;
         }).toList();
   }
+
+  LevelConfig getLevelById(int id) {
+    return state.firstWhere(
+          (l) => l.id == id,
+      orElse: () => state.first,
+    );
+  }
 }

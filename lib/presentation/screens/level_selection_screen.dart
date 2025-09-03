@@ -38,11 +38,14 @@ class LevelSelectionScreen extends ConsumerWidget {
                   level: level,
                   onPressed:
                       level.isLocked
-                          ? (){}
+                          ? () {}
                           : () {
-
-                            // Navigate via GoRouter with level ID
-                            context.push(RoutePaths.gameplay);
+                            context.go(
+                              RoutePaths.gameplay.replaceAll(
+                                ':levelId',
+                                level.id.toString(),
+                              ),
+                            );
                           },
                 );
               },
