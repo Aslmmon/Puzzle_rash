@@ -5,14 +5,12 @@ class GameplayAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String levelId;
   final int moves;
   final int totalCoins;
-  final int? coinsAnimating;
 
   const GameplayAppBar({
     super.key,
     required this.levelId,
     required this.moves,
     required this.totalCoins,
-    this.coinsAnimating,
   });
 
   @override
@@ -29,7 +27,7 @@ class GameplayAppBar extends StatelessWidget implements PreferredSizeWidget {
             children: [
               const Icon(Icons.monetization_on, color: Colors.yellowAccent),
               const SizedBox(width: 4),
-              Text('${totalCoins + (coinsAnimating ?? 0)}'),
+              Text('$totalCoins'),
             ],
           ),
         ],

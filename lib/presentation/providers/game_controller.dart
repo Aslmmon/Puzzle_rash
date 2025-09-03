@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puzzle_rush/data/cache/progress_storage.dart';
 import 'package:puzzle_rush/presentation/providers/theme_provider.dart';
+import '../../domain/entities/game_state.dart';
 import '../../domain/entities/memory_card.dart';
 import '../../domain/entities/level_config.dart';
 import '../../domain/usecases/generate_deck.dart';
@@ -15,34 +16,6 @@ final gameControllerProvider = StateNotifierProvider<GameController, GameState>(
     generateDeck: GenerateDeck(repository: ref.watch(themeRepositoryProvider)),
   ),
 );
-
-class GameState {
-  final List<MemoryCard> deck;
-  final int moves;
-  final bool won;
-  final LevelConfig? currentLevel;
-
-  GameState({
-    required this.deck,
-    this.moves = 0,
-    this.won = false,
-    this.currentLevel,
-  });
-
-  GameState copyWith({
-    List<MemoryCard>? deck,
-    int? moves,
-    bool? won,
-    LevelConfig? currentLevel,
-  }) {
-    return GameState(
-      deck: deck ?? this.deck,
-      moves: moves ?? this.moves,
-      won: won ?? this.won,
-      currentLevel: currentLevel ?? this.currentLevel,
-    );
-  }
-}
 
 class GameController extends StateNotifier<GameState> {
   final Ref ref;
@@ -65,12 +38,14 @@ class GameController extends StateNotifier<GameState> {
   MemoryCard? _secondCard;
 
   /// Start a level
-  void startLevel(LevelConfig level) {
+  Future<void> startLevel(LevelConfig level) async {
+    final coins = await storage.getCoins(); // load total coins
     state = state.copyWith(
       deck: generateDeck(level),
       moves: 0,
       won: false,
       currentLevel: level,
+      totalCoins: coins,
     );
     _firstCard = null;
     _secondCard = null;
@@ -142,8 +117,9 @@ class GameController extends StateNotifier<GameState> {
 
     // Unlock next level
     await ref.read(levelsProvider.notifier).markLevelCompleted(currentLevel.id);
+    final updatedCoins = await storage.getCoins();
 
-    state = state.copyWith(won: true);
+    state = state.copyWith(won: true, totalCoins: updatedCoins);
     winStream.add(null);
   }
 
