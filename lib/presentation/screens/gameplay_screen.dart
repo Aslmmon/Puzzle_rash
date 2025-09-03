@@ -71,12 +71,14 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen>
           _coinsEarnedThisLevel = stars;
 
           // Animate coins earned
-          _coinsAnimation = IntTween(begin: 0, end: _coinsEarnedThisLevel)
-              .animate(
-              CurvedAnimation(parent: _coinsController, curve: Curves.easeOut))
-            ..addListener(() {
-              setState(() {});
-            });
+          _coinsAnimation = IntTween(
+            begin: 0,
+            end: _coinsEarnedThisLevel,
+          ).animate(
+            CurvedAnimation(parent: _coinsController, curve: Curves.easeOut),
+          )..addListener(() {
+            setState(() {});
+          });
 
           _coinsController.forward(from: 0);
 
@@ -136,22 +138,22 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen>
           gameState.deck.isEmpty
               ? const Center(child: CircularProgressIndicator())
               : GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: widget.level.cols,
-            ),
-            itemCount: gameState.deck.length,
-            itemBuilder: (context, index) {
-              final card = gameState.deck[index];
-              return MemoryCardTile(
-                card: card,
-                matchedStream: controller.matchedCardStream.stream,
-                onTap: () {
-                  controller.selectCard(index);
-                  soundService.playTap();
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: widget.level.cols,
+                ),
+                itemCount: gameState.deck.length,
+                itemBuilder: (context, index) {
+                  final card = gameState.deck[index];
+                  return MemoryCardTile(
+                    card: card,
+                    matchedStream: controller.matchedCardStream.stream,
+                    onTap: () {
+                      controller.selectCard(index);
+                      soundService.playTap();
+                    },
+                  );
                 },
-              );
-            },
-          ),
+              ),
           // Win overlay
           if (gameState.won && gameState.currentLevel != null)
             Center(
@@ -204,7 +206,9 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen>
                         ElevatedButton(
                           onPressed: () {
                             final nextLevel =
-                            ref.read(levelsProvider)[gameState.currentLevel!.id];
+                                ref.read(levelsProvider)[gameState
+                                    .currentLevel!
+                                    .id];
                             controller.startLevel(nextLevel);
                             _winController.reset();
                           },
