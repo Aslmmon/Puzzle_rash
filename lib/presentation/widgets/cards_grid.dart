@@ -1,43 +1,47 @@
+// lib/presentation/widgets/cards_grid.dart
 import 'package:flutter/material.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:puzzle_rush/domain/entities/level_config.dart';
+import 'package:puzzle_rush/presentation/providers/game_controller.dart';
+import 'package:puzzle_rush/presentation/providers/soundServiceProvider.dart';
 import 'memory_card_tile.dart';
 
-/// Cards grid
-class CardsGrid extends StatelessWidget {
-  final List deck;
-  final int cols;
-  final Stream<int> matchedStream;
-  final Function(int) onTap;
+class CardsGrid extends ConsumerWidget {
+  final LevelConfig level;
 
-  const CardsGrid({
-    super.key,
-    required this.deck,
-    required this.cols,
-    required this.matchedStream,
-    required this.onTap,
-  });
+  const CardsGrid({super.key, required this.level});
 
   @override
-  Widget build(BuildContext context) {
-    if (deck.isEmpty) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final gameState = ref.watch(gameControllerProvider(level));
+    final gameController = ref.read(gameControllerProvider(level).notifier);
+    final soundService = ref.read(soundServiceProvider);
+
+    if (gameState.deck.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 180/cols, // max card width
-        mainAxisSpacing: 10,
-        crossAxisSpacing: 8,
-        childAspectRatio: 1,
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 6,
+          mainAxisSpacing: 16,
+          crossAxisSpacing: 20,
+          childAspectRatio: 2,
+        ),
+        itemCount: gameState.deck.length,
+        itemBuilder: (context, index) {
+          final card = gameState.deck[index];
+          return MemoryCardTile(
+            card: card,
+            onTap: () {
+              gameController.selectCard(index);
+              soundService.playTap();
+            },
+          );
+        },
       ),
-      itemCount: deck.length,
-      itemBuilder: (context, index) {
-        final card = deck[index];
-        return MemoryCardTile(
-          card: card,
-          matchedStream: matchedStream,
-          onTap: () => onTap(index),
-        );
-      },
     );
   }
 }
