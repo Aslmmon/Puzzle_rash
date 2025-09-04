@@ -36,6 +36,7 @@ class GameplayScreen extends ConsumerWidget {
             levelId: level.id.toString(),
             moves: gameState.moves,
             totalCoins: gameState.totalCoins,
+            level: level,
           ),
 
           if (gameState.isWin)

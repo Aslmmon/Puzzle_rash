@@ -14,14 +14,15 @@ final generateDeckProvider = Provider<GenerateDeck>((ref) {
   return GenerateDeck(repository: ref.watch(themeRepositoryProvider));
 });
 
-final gameControllerProvider = StateNotifierProvider.family<GameController, GameState, LevelConfig>(
+final gameControllerProvider =
+    StateNotifierProvider.family<GameController, GameState, LevelConfig>(
       (ref, level) => GameController(
-    ref: ref,
-    storage: ref.watch(progressStorageProvider),
-    generateDeck: ref.watch(generateDeckProvider),
-    level: level,
-  ),
-);
+        ref: ref,
+        storage: ref.watch(progressStorageProvider),
+        generateDeck: ref.watch(generateDeckProvider),
+        level: level,
+      ),
+    );
 
 class GameController extends StateNotifier<GameState> {
   final Ref ref;
@@ -51,7 +52,8 @@ class GameController extends StateNotifier<GameState> {
   }
 
   void selectCard(int index) {
-    if (state.isWin || (state.deck.where((c) => c.revealed && !c.matched).length >= 2)) {
+    if (state.isWin ||
+        (state.deck.where((c) => c.revealed && !c.matched).length >= 2)) {
       return;
     }
 
@@ -75,10 +77,11 @@ class GameController extends StateNotifier<GameState> {
 
     // Check for a match
     if (_firstCard!.pairId == _secondCard!.pairId) {
-      final matchedDeck = newDeck.map((c) {
-        if (c.pairId == _firstCard!.pairId) return c.match();
-        return c;
-      }).toList();
+      final matchedDeck =
+          newDeck.map((c) {
+            if (c.pairId == _firstCard!.pairId) return c.match();
+            return c;
+          }).toList();
       state = state.copyWith(deck: matchedDeck);
       _firstCard = null;
       _secondCard = null;
@@ -95,6 +98,20 @@ class GameController extends StateNotifier<GameState> {
         _secondCard = null;
       });
     }
+  }
+
+  Future<void> activateRevealAll() async {
+    // Reveal all cards
+    final newDeck = state.deck.map((card) => card.reveal()).toList();
+    state = state.copyWith(deck: newDeck);
+
+    // After a few seconds, flip them back
+    await Future.delayed(const Duration(seconds: 4));
+
+    // Only hide cards that are not yet matched
+    final hiddenDeck =
+        state.deck.map((card) => card.matched ? card : card.hide()).toList();
+    state = state.copyWith(deck: hiddenDeck);
   }
 
   Future<void> _handleWin() async {
@@ -121,6 +138,11 @@ class GameController extends StateNotifier<GameState> {
     } else {
       return 1;
     }
+  }
+
+  void addMoves(int amount) {
+    state = state.copyWith(moves: state.moves - amount);
+    print('Added $amount extra moves.');
   }
 
   void reset() {

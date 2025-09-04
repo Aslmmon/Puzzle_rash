@@ -12,6 +12,7 @@ class ShopScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final shopItems = ref.watch(shopControllerProvider);
+    final shopController = ref.read(shopControllerProvider.notifier);
     final currentCoins = ref.watch(
       progressStorageProvider.select((p) => p.getCoins()),
     );
@@ -45,9 +46,7 @@ class ShopScreen extends ConsumerWidget {
                 onPressed:
                     currentCoins >= item.cost
                         ? () async {
-                          await ref
-                              .read(shopControllerProvider.notifier)
-                              .buyItem(item.id);
+                          await shopController.buyItem(item.id);
                           // The UI will update automatically here
                         }
                         : null, // Disable the button if the user has no coins

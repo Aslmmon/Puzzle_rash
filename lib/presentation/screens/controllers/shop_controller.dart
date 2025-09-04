@@ -4,16 +4,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puzzle_rush/data/cache/progress_storage.dart';
 import 'package:puzzle_rush/domain/entities/shop_item.dart';
 import 'package:puzzle_rush/presentation/providers/storageProvider.dart';
+import 'package:puzzle_rush/presentation/screens/controllers/player_inventory_controller.dart';
 
 // The provider that holds the list of items
-final shopControllerProvider = StateNotifierProvider<ShopController, List<ShopItem>>((ref) {
-  return ShopController(ref.read(progressStorageProvider));
-});
+final shopControllerProvider =
+    StateNotifierProvider<ShopController, List<ShopItem>>((ref) {
+      return ShopController(
+        ref.read(progressStorageProvider),
+        ref.read(playerInventoryProvider.notifier), // Add the new dependency
+      );
+    });
 
 class ShopController extends StateNotifier<List<ShopItem>> {
   final ProgressStorage storage;
+  final PlayerInventoryController inventory;
 
-  ShopController(this.storage) : super(_initialItems);
+  ShopController(this.storage, this.inventory) : super(_initialItems);
 
   static final List<ShopItem> _initialItems = [
     const ShopItem(
@@ -39,14 +45,11 @@ class ShopController extends StateNotifier<List<ShopItem>> {
     if (currentCoins >= item.cost) {
       // Deduct the coins
       await storage.addCoins(-item.cost);
-
-      // TODO: Implement logic to grant the item (e.g., update player inventory)
+      inventory.addItem(itemId);
       print('Successfully purchased ${item.name}!');
-
       return true;
     } else {
       print('Not enough coins to purchase ${item.name}.');
-      // TODO: Show a user-friendly error message
       return false;
     }
   }
