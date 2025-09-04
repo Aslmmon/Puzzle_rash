@@ -1,4 +1,3 @@
-// lib/service/router/app_router.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:puzzle_rush/presentation/providers/levels_provider.dart';
@@ -7,6 +6,7 @@ import 'package:puzzle_rush/presentation/screens/loading_screen.dart';
 import 'package:puzzle_rush/presentation/screens/main_menu_screen.dart';
 import 'package:puzzle_rush/presentation/screens/level_selection_screen.dart';
 import 'package:puzzle_rush/presentation/screens/gameplay_screen.dart';
+import 'package:puzzle_rush/presentation/screens/shop_screen.dart';
 import 'package:puzzle_rush/presentation/screens/splash_screen.dart';
 
 // AppRouter provider
@@ -32,6 +32,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.levelSelection,
         builder: (context, state) => const LevelSelectionScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.shop,
+        builder: (context, state) => const ShopScreen(),
       ),
       GoRoute(
         path: RoutePaths.gameplay,

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:puzzle_rush/presentation/providers/levels_provider.dart';
 import 'package:puzzle_rush/presentation/widgets/cards_grid.dart';
-import 'package:puzzle_rush/presentation/widgets/gameplay_app_bar.dart';
+import 'package:puzzle_rush/presentation/widgets/custom_gameplay_ui.dart';
 import 'package:puzzle_rush/presentation/widgets/win_overlay.dart';
 import 'package:puzzle_rush/presentation/providers/game_controller.dart';
 import 'package:puzzle_rush/domain/entities/level_config.dart';
@@ -36,10 +36,6 @@ class GameplayScreen extends ConsumerWidget {
             levelId: level.id.toString(),
             moves: gameState.moves,
             totalCoins: gameState.totalCoins,
-            onRewardedAdTap: () {
-              // TODO: Implement rewarded ad logic here
-              print('Rewarded Ad button tapped!');
-            },
           ),
 
           if (gameState.isWin)
