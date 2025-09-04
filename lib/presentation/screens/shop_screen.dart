@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:puzzle_rush/presentation/providers/storageProvider.dart';
 
 import 'controllers/shop_controller.dart';
 
@@ -11,6 +12,9 @@ class ShopScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final shopItems = ref.watch(shopControllerProvider);
+    final currentCoins = ref.watch(
+      progressStorageProvider.select((p) => p.getCoins()),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -31,14 +35,22 @@ class ShopScreen extends ConsumerWidget {
               leading: Icon(item.icon, size: 40),
               title: Text(
                 item.name,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               subtitle: Text(item.description),
               trailing: ElevatedButton(
-                onPressed: () {
-                  // The buying logic will be added on Day 6
-                  print('Tapped to buy ${item.name}');
-                },
+                onPressed:
+                    currentCoins >= item.cost
+                        ? () async {
+                          await ref
+                              .read(shopControllerProvider.notifier)
+                              .buyItem(item.id);
+                          // The UI will update automatically here
+                        }
+                        : null, // Disable the button if the user has no coins
                 child: Text('${item.cost} Coins'),
               ),
             ),
