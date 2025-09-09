@@ -37,10 +37,13 @@ dependencies:
   flame_audio: ^2.1.0 # Add this
   flame: ^1.10.0  # Check for the latest version on pub.dev
   flutter_riverpod: ^2.4.0 # Check for the latest version on pub.dev
-  firebase_core: ^2.17.0 # Check for the latest version on pub.dev
   go_router: ^16.2.0
   shared_preferences: ^2.5.3
   google_mobile_ads: ^6.0.0
+  codeleek_core:
+    git:
+      url: https://github.com/Aslmmon/Codeeleek_core.git
+      ref: main # The branch, tag, or commit you want to use
 
 dev_dependencies:
   flutter_test:

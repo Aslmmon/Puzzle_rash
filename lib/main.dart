@@ -1,3 +1,5 @@
+import 'package:codeleek_core/ads/provider.dart';
+import 'package:codeleek_core/core/config/core_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,12 +20,20 @@ void main() {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
-  ]).then((_) {
-    runApp(
-      // Wrap your app with ProviderScope for Riverpod state management
-      const ProviderScope(child: AppInitializer()),
-    );
-  });
+  ]);
+  final coreConfig = CoreConfig(
+    admobAppId: 'ca-app-pub-3940256099942544~3347511713',
+    admobInterstitialAdUnitId: 'ca-app-pub-3940256099942544/1033173712',
+    admobRewardedAdUnitId: 'ca-app-pub-3940256099942544/5224354917',
+    admobBannerAdUnitId: 'ca-app-pub-3940256099942544/6300978111',
+  );
+
+  runApp(
+    ProviderScope(
+      overrides: [coreConfigProvider.overrideWithValue(coreConfig)],
+      child: const AppInitializer(),
+    ),
+  );
 }
 
 class AppInitializer extends ConsumerWidget {
@@ -35,11 +45,8 @@ class AppInitializer extends ConsumerWidget {
     final sharedPrefs = ref.watch(sharedPreferencesProvider);
 
     return sharedPrefs.when(
-      // When the future is resolved, show your main app
       data: (_) => const MyApp(),
-      // While it's loading, show a loading screen
       loading: () => const MaterialApp(home: LoadingScreen()),
-      // If there's an error, handle it gracefully
       error:
           (err, stack) => const MaterialApp(
             home: Scaffold(
