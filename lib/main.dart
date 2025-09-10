@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puzzle_rush/presentation/providers/storageProvider.dart';
-import 'package:puzzle_rush/presentation/screens/loading_screen.dart';
-import 'package:puzzle_rush/presentation/screens/splash_screen.dart';
+import 'package:puzzle_rush/presentation/utils/AppConstants.dart';
 import 'package:puzzle_rush/service/router/app_router.dart';
 
 // You might need to import your splash screen later here
@@ -46,7 +45,7 @@ class AppInitializer extends ConsumerWidget {
 
     return sharedPrefs.when(
       data: (_) => const MyApp(),
-      loading: () => const MaterialApp(home: LoadingScreen()),
+      loading: () => CircularProgressIndicator(),
       error:
           (err, stack) => const MaterialApp(
             home: Scaffold(
@@ -70,7 +69,7 @@ class MyApp extends ConsumerWidget {
     final router = ref.watch(appRouterProvider);
 
     return MaterialApp.router(
-      title: 'Puzzle Rush',
+      title: AppConstants.appName,
       theme: ThemeData(
         primarySwatch: Colors.blue, // You can customize your theme
       ),

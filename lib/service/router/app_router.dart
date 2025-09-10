@@ -1,4 +1,5 @@
 import 'package:codeleek_core/codeleek_core.dart';
+import 'package:codeleek_core/core/utils/app_constants.dart';
 import 'package:codeleek_core/ui/widgets/branding_splash.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +9,7 @@ import 'package:puzzle_rush/presentation/screens/main_menu_screen.dart';
 import 'package:puzzle_rush/presentation/screens/level_selection_screen.dart';
 import 'package:puzzle_rush/presentation/screens/gameplay_screen.dart';
 import 'package:puzzle_rush/presentation/screens/shop_screen.dart';
+import 'package:puzzle_rush/presentation/utils/AppConstants.dart';
 
 // AppRouter provider
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -17,52 +19,25 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.splash,
         pageBuilder:
-            (context, state) => CustomTransitionPage(
-              key: state.pageKey,
-              child: BrandingSplash(
-                appName: RoutePaths.AppName,
+            (context, state) => buildPageWithSlideTransition(
+              context: context,
+              state: state,
+              child: CoreSplash(
+                appName: AppConstants.appName,
                 onAnimationComplete: () => context.go(RoutePaths.loading),
               ),
-              transitionsBuilder: (
-                context,
-                animation,
-                secondaryAnimation,
-                child,
-              ) {
-                return FadeTransition(
-                  opacity: CurveTween(
-                    curve: Curves.easeInOut,
-                  ).animate(animation),
-                  child: child,
-                );
-              },
             ),
       ),
       GoRoute(
         path: RoutePaths.loading,
-        pageBuilder: (context, state) {
-          return CustomTransitionPage(
-            key: state.pageKey, // Important for proper page management
-            child: CoreLoadingScreen(
-              onInitializationComplete: () {
-                context.go(RoutePaths.mainMenu);
-              },
-            ), // The widget for the target screen
-            transitionsBuilder: (
-              context,
-              animation,
-              secondaryAnimation,
-              child,
-            ) {
-              return FadeTransition(
-                opacity: CurveTween(
-                  curve: Curves.easeInCirc,
-                ).animate(animation),
-                child: child,
-              );
-            },
-          );
-        },
+        pageBuilder:
+            (context, state) => buildPageWithSlideTransition(
+              context: context,
+              state: state,
+              child: CoreLoadingScreen(
+                onInitializationComplete: () => context.go(RoutePaths.mainMenu),
+              ),
+            ),
       ),
       GoRoute(
         path: RoutePaths.mainMenu,
@@ -99,4 +74,25 @@ class RoutePaths {
   static const shop = '/shop';
   static const settings = '/settings';
   static const AppName = 'Memory Rush';
+}
+
+CustomTransitionPage<T> buildPageWithSlideTransition<T>({
+  required BuildContext context,
+  required GoRouterState state,
+  required Widget child,
+}) {
+  return CustomTransitionPage<T>(
+    key: state.pageKey,
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      // Use a slide transition that comes in from the right
+      return SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(1.0, 0.0), // Start from the right side
+          end: Offset.zero, // End at the center
+        ).animate(animation),
+        child: child,
+      );
+    },
+  );
 }

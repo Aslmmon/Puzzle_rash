@@ -2,9 +2,8 @@
 import 'package:codeleek_core/theme/typography.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:puzzle_rush/presentation/providers/soundServiceProvider.dart';
 import 'package:puzzle_rush/presentation/providers/storageProvider.dart';
-
+import 'package:puzzle_rush/presentation/utils/AppConstants.dart';
 import 'game_button.dart';
 
 class MainMenuAppBar extends ConsumerWidget implements PreferredSizeWidget {
@@ -15,17 +14,13 @@ class MainMenuAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Watch the player's coins and sound state
     final totalCoins = ref.watch(
       progressStorageProvider.select((p) => p.getCoins()),
     );
-    // final isSoundOn = ref.watch(
-    //   soundServiceProvider.select((s) => s.isSoundOn),
-    // );
-
     return AppBar(
-      title: Text('Memory Game', style: CoreTypography.headline1),
+      title: Text(AppConstants.appName, style: CoreTypography.headline1),
       centerTitle: true,
+
       backgroundColor: Colors.transparent,
       elevation: 0,
       actions: [
@@ -34,10 +29,7 @@ class MainMenuAppBar extends ConsumerWidget implements PreferredSizeWidget {
           children: [
             const Icon(Icons.monetization_on, color: Colors.amber),
             const SizedBox(width: 4),
-            Text(
-              '$totalCoins',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+            Text('$totalCoins', style: CoreTypography.headline1),
             const SizedBox(width: 8),
           ],
         ),

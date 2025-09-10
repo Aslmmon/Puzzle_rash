@@ -126,7 +126,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "9400050a57e9c0cb2608088e0af662dd11246c18"
+      resolved-ref: "6f7a67f3d9ef1f763317f3fcc31c6367a86b6ebf"
       url: "https://github.com/Aslmmon/Codeeleek_core.git"
     source: git
     version: "1.0.0+1"
