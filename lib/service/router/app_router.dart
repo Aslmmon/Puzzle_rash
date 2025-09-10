@@ -1,5 +1,4 @@
 import 'package:codeleek_core/codeleek_core.dart';
-import 'package:codeleek_core/core/utils/app_constants.dart';
 import 'package:codeleek_core/ui/widgets/branding_splash.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

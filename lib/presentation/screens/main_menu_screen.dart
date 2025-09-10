@@ -3,6 +3,7 @@ import 'package:codeleek_core/codeleek_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:puzzle_rush/presentation/utils/AppConstants.dart';
 import 'package:puzzle_rush/presentation/widgets/game_button.dart';
 import 'package:puzzle_rush/presentation/widgets/main_menu_app_bar.dart';
 import 'package:puzzle_rush/service/router/app_router.dart';
@@ -20,7 +21,7 @@ class MainMenuScreen extends StatelessWidget {
         fit: StackFit.expand, // Make the stack fill the entire screen
         children: [
           Image.asset(
-            'assets/ui/bacgkround_mosque_2.png', // Replace with your image path
+            AppConstants.backgroundAsset, // Replace with your image path
             fit: BoxFit.cover,
           ),
           Container(
@@ -36,11 +37,17 @@ class MainMenuScreen extends StatelessWidget {
                   children: [
                     // Example of a button that uses an SVG icon
                     GameChicletButton(
-                      text: 'PLAY',
-                      onPressed: () => context.push(RoutePaths.levelSelection),
+                      text: AppConstants.playButtonText,
+                      onPressed: () => context.go(RoutePaths.levelSelection),
                     ),
-                    GameChicletButton(text: 'Daily Puzzle', onPressed: () {}),
-                    GameChicletButton(text: 'Shop', onPressed: () {}),
+                    GameChicletButton(
+                      text: AppConstants.dailyPuzzleButtonText,
+                      onPressed: () {},
+                    ),
+                    GameChicletButton(
+                      text: AppConstants.shopeButtonText,
+                      onPressed: () {},
+                    ),
                   ],
                 ),
               );
