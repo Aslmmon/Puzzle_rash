@@ -44,7 +44,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: RoutePaths.levelSelection,
-        builder: (context, state) => const LevelSelectionScreen(),
+        pageBuilder:
+            (context, state) => buildPageWithSlideTransition(
+          context: context,
+          state: state,
+          child: const LevelSelectionScreen(),
+        ),
+
       ),
       GoRoute(
         path: RoutePaths.shop,

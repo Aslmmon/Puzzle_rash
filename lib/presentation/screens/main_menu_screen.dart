@@ -33,12 +33,13 @@ class MainMenuScreen extends StatelessWidget {
             builder: (context, constraints) {
               return Center(
                 child: Column(
+
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // Example of a button that uses an SVG icon
                     GameChicletButton(
                       text: AppConstants.playButtonText,
-                      onPressed: () => context.go(RoutePaths.levelSelection),
+                      onPressed: () => context.push(RoutePaths.levelSelection),
                     ),
                     GameChicletButton(
                       text: AppConstants.dailyPuzzleButtonText,
